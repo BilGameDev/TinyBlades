@@ -14,4 +14,4 @@ It is based off of EpicOnlineTransport available here: https://github.com/FakeBy
 
 I have opted for a Raycast based collision detection as opposed to a Physics based system as it can be quite heavy and unreliable in a networked enviroment.
 
-This project will grow as I understand more about Networking. I plan to introduce multiple Epic Games Services to this project.
+This project will grow as I understand more about Networking as I am still quite new to this. I plan to introduce multiple Epic Games Services to this project.
