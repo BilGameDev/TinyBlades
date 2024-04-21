@@ -5,15 +5,18 @@ using UnityEngine;
 
 public class PlayerAudio : NetworkBehaviour
 {
-    [SerializeField] IInputProvider inputProvider;
-    public AudioClip walkSound;
-    public AudioClip swordSwingSound;
-    public AudioClip hitSound;
-    [SerializeField] AudioSource audioSource;
+    #region Fields
+    public AudioClip WalkSound;
+    public AudioClip SwordSwingSound;
+    public AudioClip HitSound;
+    [SerializeField] AudioSource _audioSource;
+    [SerializeField] IInputProvider _inputProvider;
+    
+    #endregion
 
     private void Awake()
     {
-        inputProvider = GetComponent<IInputProvider>();
+        _inputProvider = GetComponent<IInputProvider>();
     }
 
 
@@ -25,12 +28,12 @@ public class PlayerAudio : NetworkBehaviour
     {
         if (!isLocalPlayer) return;
 
-        if (inputProvider.MovementInput.magnitude > 0.1f)
+        if (_inputProvider.MovementInput.magnitude > 0.1f)
         {
             TryPlayWalkSound();
         }
 
-        if (inputProvider.AttackPressed)
+        if (_inputProvider.AttackPressed)
         {
             TryPlaySwordSwingSound();
         }
@@ -40,7 +43,7 @@ public class PlayerAudio : NetworkBehaviour
     public void TryPlayWalkSound()
     {
         if (!isLocalPlayer) return;
-        if (inputProvider.MovementInput.magnitude > 0.1f && !audioSource.isPlaying)
+        if (_inputProvider.MovementInput.magnitude > 0.1f && !_audioSource.isPlaying)
         {
             CmdPlayWalkSound();
         }
@@ -83,27 +86,27 @@ public class PlayerAudio : NetworkBehaviour
     [ClientRpc]
     private void RpcPlayWalkSound()
     {
-        if (walkSound && !audioSource.isPlaying)
+        if (WalkSound && !_audioSource.isPlaying)
         {
-            audioSource.PlayOneShot(walkSound);
+            _audioSource.PlayOneShot(WalkSound);
         }
     }
 
     [ClientRpc]
     private void RpcPlaySwordSwingSound()
     {
-        if (swordSwingSound)
+        if (SwordSwingSound)
         {
-            audioSource.PlayOneShot(swordSwingSound);
+            _audioSource.PlayOneShot(SwordSwingSound);
         }
     }
 
     [ClientRpc]
     private void RpcPlayHitSound()
     {
-        if (hitSound)
+        if (HitSound)
         {
-            audioSource.PlayOneShot(hitSound);
+            _audioSource.PlayOneShot(HitSound);
         }
     }
 }

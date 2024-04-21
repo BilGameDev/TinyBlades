@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class CustomNetworkManager : NetworkManager
 {
+    #region Fields
     [SerializeField] GameObject leaveCanvas;
     [SerializeField] GameObject mainCanvas;
+
+    #endregion
 
     //Disables the main canvas on Connect and displays it back on Disconnects
     public override void OnClientConnect()

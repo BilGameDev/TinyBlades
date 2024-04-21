@@ -7,24 +7,29 @@ using UnityEngine;
 
 public class NetworkPlayer : NetworkBehaviour
 {
-    [SerializeField] GameObject cameraObject;
-    [SerializeField] ParticleSystem spawnEffect;
-    [SerializeField] public PlayerAnimator playerAnimator;
-    [SerializeField] TextMeshPro playerTitle;
-    [SerializeField] GameObject playerCanvas;
+    #region Fields
 
-    private CameraFollow Camera;
+    [SerializeField] public PlayerAnimator PlayerAnimator;
+
+    [SerializeField] GameObject _cameraObject;
+    [SerializeField] ParticleSystem _spawnEffect;
+    [SerializeField] TextMeshPro _playerTitle;
+    [SerializeField] GameObject _playerCanvas;
+
+    private CameraFollow _camera;
+
+    #endregion
 
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
 
         //We instantiate the camera when the  local player joins and set its target to this transform
-        Camera = Instantiate(cameraObject).GetComponent<CameraFollow>();
-        Camera.SetTarget(transform);
+        _camera = Instantiate(_cameraObject).GetComponent<CameraFollow>();
+        _camera.SetTarget(transform);
 
         //Activate the player canvas
-        playerCanvas.SetActive(true);
+        _playerCanvas.SetActive(true);
 
         //Disable layers as to not accidently register self player for raycasts
         gameObject.tag = "Untagged";
@@ -35,14 +40,14 @@ public class NetworkPlayer : NetworkBehaviour
     {
         //Destroy the camera on player disconnect
         base.OnStopLocalPlayer();
-        Destroy(Camera.gameObject);
+        Destroy(_camera.gameObject);
     }
 
     public override void OnStopClient()
     {
         //A spoof effect is played on all clients
         base.OnStopClient();
-        spawnEffect.Play();
+        _spawnEffect.Play();
     }
 
 
@@ -53,8 +58,8 @@ public class NetworkPlayer : NetworkBehaviour
 
         //Sets the title of players accordingly
         //A spoof effect is played on all clients
-        playerTitle.text = isLocalPlayer ? "Me" : "Player " + connectionToClient.connectionId.ToString();
-        spawnEffect.Play();
+        _playerTitle.text = isLocalPlayer ? "Me" : "Player " + connectionToClient.connectionId.ToString();
+        _spawnEffect.Play();
     }
 
 }

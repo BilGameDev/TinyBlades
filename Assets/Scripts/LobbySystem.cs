@@ -8,15 +8,16 @@ using UnityEngine;
 // more information on https://github.com/FakeByte/EpicOnlineTransport
 public class LobbySystem : EOSLobby
 {
-    private string lobbyName = "My Lobby";
+    #region Fields
+    public Transform LobbyHolder;
+    public GameObject LobbyUI;
+    public GameObject LobbyCanvas;
+    public GameObject LeaveCanvas;
 
-    private List<LobbyDetails> foundLobbies = new List<LobbyDetails>();
-    private List<Attribute> lobbyData = new List<Attribute>();
+    private const string LOBBYNAME = "My Lobby";
+    private List<LobbyDetails> _foundLobbies = new List<LobbyDetails>();
 
-    public Transform lobbyHolder;
-    public GameObject lobbyUI;
-    public GameObject lobbyCanvas;
-    public GameObject leaveCanvas;
+    #endregion
 
     //register events
     private void OnEnable()
@@ -41,29 +42,27 @@ public class LobbySystem : EOSLobby
     //when the lobby is successfully created, start the host
     private void OnCreateLobbySuccess(List<Attribute> attributes)
     {
-        lobbyData = attributes;
 
         GetComponent<NetworkManager>().StartHost();
-        lobbyCanvas.SetActive(false);
-        leaveCanvas.SetActive(true);
+        LobbyCanvas.SetActive(false);
+        LeaveCanvas.SetActive(true);
     }
 
     //when the user joined the lobby successfully, set network address and connect
     private void OnJoinLobbySuccess(List<Attribute> attributes)
     {
-        lobbyData = attributes;
         NetworkManager netManager = GetComponent<NetworkManager>();
         netManager.networkAddress = attributes.Find((x) => x.Data.Key == hostAddressKey).Data.Value.AsUtf8;
         netManager.StartClient();
-        lobbyCanvas.SetActive(false);
-        leaveCanvas.SetActive(true);
+        LobbyCanvas.SetActive(false);
+        LeaveCanvas.SetActive(true);
 
     }
 
     //callback for FindLobbiesSucceeded
     private void OnFindLobbiesSuccess(List<LobbyDetails> lobbiesFound)
     {
-        foundLobbies = lobbiesFound;
+        _foundLobbies = lobbiesFound;
         PopulateButtons();
     }
 
@@ -73,13 +72,13 @@ public class LobbySystem : EOSLobby
         NetworkManager netManager = GetComponent<NetworkManager>();
         netManager.StopHost();
         netManager.StopClient();
-        lobbyCanvas.SetActive(true);
-        leaveCanvas.SetActive(false);
+        LobbyCanvas.SetActive(true);
+        LeaveCanvas.SetActive(false);
     }
 
     public void CreateLobbyButton()
     {
-        CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = lobbyName }, });
+        CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = LOBBYNAME }, });
     }
 
     public void FindLobbyButton()
@@ -93,17 +92,17 @@ public class LobbySystem : EOSLobby
 
     public void PopulateButtons()
     {
-        foreach (LobbyDetails lobby in foundLobbies)
+        foreach (LobbyDetails lobby in _foundLobbies)
         {
             //get lobby name
             Attribute lobbyNameAttribute = new Attribute();
             lobby.CopyAttributeByKey(new LobbyDetailsCopyAttributeByKeyOptions { AttrKey = AttributeKeys[0] }, out lobbyNameAttribute);
 
-            UIButtons scrollButton = Instantiate(lobbyUI, lobbyHolder).GetComponent<UIButtons>();
+            UIButtons scrollButton = Instantiate(LobbyUI, LobbyHolder).GetComponent<UIButtons>();
 
-            scrollButton.lobbyName.text = lobbyNameAttribute.Data.Value.AsUtf8.Length > 30 ? lobbyNameAttribute.Data.Value.AsUtf8.Substring(0, 27).Trim() + "..." : lobbyNameAttribute.Data.Value.AsUtf8;
-            scrollButton.playerNumber.text = lobby.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }).ToString();
-            scrollButton.joinLobby.onClick.AddListener(() =>
+            scrollButton.LobbyName.text = lobbyNameAttribute.Data.Value.AsUtf8.Length > 30 ? lobbyNameAttribute.Data.Value.AsUtf8.Substring(0, 27).Trim() + "..." : lobbyNameAttribute.Data.Value.AsUtf8;
+            scrollButton.PlayerNumber.text = lobby.GetMemberCount(new LobbyDetailsGetMemberCountOptions { }).ToString();
+            scrollButton.JoinLobby.onClick.AddListener(() =>
             {
                 JoinLobby(lobby, AttributeKeys);
             });
@@ -113,9 +112,9 @@ public class LobbySystem : EOSLobby
     public void PlayMode()
     {
         FindLobbies();
-        if (foundLobbies.Count > 0)
-            JoinLobby(foundLobbies[0]);
+        if (_foundLobbies.Count > 0)
+            JoinLobby(_foundLobbies[0]);
         else
-            CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = lobbyName }, });
+            CreateLobby(4, LobbyPermissionLevel.Publicadvertised, false, new AttributeData[] { new AttributeData { Key = AttributeKeys[0], Value = LOBBYNAME }, });
     }
 }

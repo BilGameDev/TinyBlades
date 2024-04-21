@@ -6,35 +6,39 @@ using UnityEngine;
 
 public class PlayerMobile : NetworkBehaviour, IInputProvider
 {
+    #region Fields
+    
     //Mobile Input
     [Header("References")]
-    public static PlayerMobile instance;
-    [SerializeField] public GameObject mobileCanvas;
-    [SerializeField] Joystick joystick;
-    [SerializeField] FixedButton attackButton;
+    public static PlayerMobile s_instance;
+    [SerializeField] public GameObject MobileCanvas;
+    [SerializeField] Joystick _joystick;
+    [SerializeField] FixedButton _attackButton;
 
-    public float Horizontal => joystick.Horizontal;
+    public float Horizontal => _joystick.Horizontal;
 
-    public float Vertical => joystick.Vertical;
+    public float Vertical => _joystick.Vertical;
 
-    public bool AttackPressed => attackButton.ButtonDown;
+    public bool AttackPressed => _attackButton.ButtonDown;
 
-    public Vector3 MovementInput => movement;
+    public Vector3 MovementInput => _movement;
 
-    public bool IsAttacking => attack;
+    public bool IsAttacking => _attack;
 
-    private Vector3 movement;
-    private bool attack;
+    private Vector3 _movement;
+    private bool _attack;
+
+    #endregion
 
     void Update()
     {
         if (isLocalPlayer)
-            attack = AttackPressed;
+            _attack = AttackPressed;
     }
 
     void FixedUpdate()
     {
         if (!isLocalPlayer) return;
-        movement = new Vector3(Horizontal, 0.0f, Vertical).normalized;
+        _movement = new Vector3(Horizontal, 0.0f, Vertical).normalized;
     }
 }

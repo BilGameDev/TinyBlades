@@ -3,14 +3,16 @@ using Mirror;
 
 public class PlayerController : NetworkBehaviour
 {
-    public float speed = 5f;
-    public float rotationSpeed = 720f; // Degrees per second
+    #region Fields
 
-    private IInputProvider inputProvider;
+    public float Speed = 5f;
+    public float RotationSpeed = 720f; // Degrees per second
+
+    private IInputProvider _inputProvider;
 
     private void Awake()
     {
-        inputProvider = GetComponent<IInputProvider>();
+        _inputProvider = GetComponent<IInputProvider>();
     }
 
     void Update()
@@ -24,22 +26,24 @@ public class PlayerController : NetworkBehaviour
     void HandleMovement()
     {
         //To avoid sending data constantly, a check to see if the input has changed is implemeneted
-        if (inputProvider.MovementInput.magnitude > 0)
+        if (_inputProvider.MovementInput.magnitude > 0)
         {
             // The server is sent the movement and information about the players collision
             // I have opted for RayCast based collisions as they are more performant and responsive than Physics based systems in Networking
             // This controller also uses Server-authoritative movement
             // The transform is then syncronized on all observers using the NetworkTransform component
-            CmdMove(inputProvider.MovementInput, Physics.Raycast(transform.position, transform.forward, 1));
+            CmdMove(_inputProvider.MovementInput, Physics.Raycast(transform.position, transform.forward, 1));
         }
 
     }
+
+    #endregion
 
     [Command]
     void CmdMove(Vector3 movementInput, bool isBlocked)
     {
         Vector3 direction = movementInput.normalized;
-        float distance = speed * Time.deltaTime;
+        float distance = Speed * Time.deltaTime;
 
         if (!isBlocked)
         {
@@ -55,6 +59,6 @@ public class PlayerController : NetworkBehaviour
 
         //This rotates the player according to movement input
         Quaternion toRotation = Quaternion.LookRotation(movementInput, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, RotationSpeed * Time.deltaTime);
     }
 }

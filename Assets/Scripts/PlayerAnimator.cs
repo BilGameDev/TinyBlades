@@ -5,15 +5,16 @@ using UnityEngine;
 
 public class PlayerAnimator : NetworkBehaviour
 {
-
-    [SerializeField] Animator animator;
-    [SerializeField] PlayerCombat playerCombat;
-    [SerializeField] IInputProvider inputProvider;
+    #region Fields
+    [SerializeField] Animator _animator;
+    [SerializeField] PlayerCombat _playerCombat;
+    [SerializeField] IInputProvider _inputProvider;
+    #endregion
 
     private void Awake()
     {
         //Gets the attached Input controller which could either be Keyboard or Mobile
-        inputProvider = GetComponent<IInputProvider>();
+        _inputProvider = GetComponent<IInputProvider>();
     }
 
     void Update()
@@ -21,16 +22,16 @@ public class PlayerAnimator : NetworkBehaviour
         //Sends the states to the server for it to assign them to the animator, the animations are then sync'd to all observers using the NetworkAnimator component
         if (isLocalPlayer)
         {
-            CmdSetAnimation(inputProvider.MovementInput, inputProvider.AttackPressed, playerCombat.isDead, playerCombat.isHit);
+            CmdSetAnimation(_inputProvider.MovementInput, _inputProvider.AttackPressed, _playerCombat.IsDead, _playerCombat.IsHit);
         }
     }
 
     [Command]
     void CmdSetAnimation(Vector3 movement, bool combat, bool dead, bool hit)
     {
-        animator.SetBool("isMoving", movement.magnitude > 0);
-        animator.SetBool("inCombat", combat);
-        animator.SetBool("isDead", dead);
-        animator.SetBool("isHit", hit);
+        _animator.SetBool("isMoving", movement.magnitude > 0);
+        _animator.SetBool("inCombat", combat);
+        _animator.SetBool("isDead", dead);
+        _animator.SetBool("isHit", hit);
     }
 }

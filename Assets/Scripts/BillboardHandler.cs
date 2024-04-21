@@ -2,17 +2,20 @@ using UnityEngine;
 
 public class BillboardHandler : MonoBehaviour
 {
-   public Camera mainCamera;
+
+    #region Fields
+    public Camera MainCamera;
+    #endregion
 
     void Update()
     {
         // find the main camera
-        if (mainCamera == null)
+        if (MainCamera == null)
         {
-            mainCamera = Camera.main;
+            MainCamera = Camera.main;
         }
 
         // Make the text face the camera
-        transform.LookAt(transform.position + mainCamera.transform.rotation * Vector3.forward, mainCamera.transform.rotation * Vector3.up);
+        transform.LookAt(transform.position + MainCamera.transform.rotation * Vector3.forward, MainCamera.transform.rotation * Vector3.up);
     }
 }

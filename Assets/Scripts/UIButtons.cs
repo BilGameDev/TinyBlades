@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class UIButtons : MonoBehaviour
 {
     // This is a prefab button used to populate the scrollView when getting available lobbies for the EOS lobby system
-    [SerializeField] public TextMeshProUGUI lobbyName;
-    [SerializeField] public TextMeshProUGUI playerNumber;
-    [SerializeField] public Button joinLobby;
+    [SerializeField] public TextMeshProUGUI LobbyName;
+    [SerializeField] public TextMeshProUGUI PlayerNumber;
+    [SerializeField] public Button JoinLobby;
 }
